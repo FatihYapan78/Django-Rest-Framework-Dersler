@@ -8,6 +8,19 @@ from haberler.api.serializers import *
 from rest_framework.views import APIView
 from rest_framework.generics import get_object_or_404
 
+class GazeteciListCreateAPIView(APIView):
+
+    def get(self,request):
+        gazeteciler = Gazeteci.objects.all()
+        serializer = GazeteciSerializer(gazeteciler, many=True,context={'request': request})
+        return Response(serializer.data)
+
+    def post(self,request):
+        serializer = GazeteciSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class HaberListCreateAPIView(APIView):
 
@@ -25,25 +38,25 @@ class HaberListCreateAPIView(APIView):
 
 class HaberDetailAPIView(APIView):
 
-    def get_object(self,id):
-        haber = get_object_or_404(Haber,id=id)
+    def get_object(self,pk):
+        haber = get_object_or_404(Haber,pk=pk)
         return haber
     
-    def get(self,request,id):
-        haber = self.get_object(id)
+    def get(self,request,pk):
+        haber = self.get_object(pk)
         serializer = HaberSerializer(haber)
         return Response(serializer.data)
 
-    def put(self,request,id):
-        haber = self.get_object(id)
+    def put(self,request,pk):
+        haber = self.get_object(pk)
         serializer = HaberSerializer(haber,data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     
-    def delete(self,request,id):
-        haber = self.get_object(id)
+    def delete(self,request,pk):
+        haber = self.get_object(pk)
         haber.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

@@ -3,9 +3,9 @@ from haberler.models import *
 from datetime import datetime
 from django.utils.timesince import timesince
 
+
 class HaberSerializer(serializers.ModelSerializer):
     yayın_tarihi_üzerinden_gecen_süre = serializers.SerializerMethodField()
-    
     class Meta:
         model = Haber
         fields = "__all__"
@@ -31,3 +31,14 @@ class HaberSerializer(serializers.ModelSerializer):
                 "Başlık alanı 15 karakterden küçük olamaz."
             )
         return baslik
+    
+class GazeteciSerializer(serializers.ModelSerializer):
+    # haberler = HaberSerializer(many=True,read_only=True)
+    haberler = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name="haber"
+    )
+    class Meta:
+        model = Gazeteci
+        fields = "__all__"
